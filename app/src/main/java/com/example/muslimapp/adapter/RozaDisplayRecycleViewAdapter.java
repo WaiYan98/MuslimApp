@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatCallback;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.muslimapp.R;
 import com.example.muslimapp.pojo.Roza;
+import com.example.muslimapp.util.Converter;
+import com.example.muslimapp.util.PreferenceUtil;
 import com.google.android.material.button.MaterialButton;
 
 
@@ -25,10 +28,12 @@ public class RozaDisplayRecycleViewAdapter extends RecyclerView.Adapter<RozaDisp
 
     private Context context;
     private List<Roza> rozaList;
+    private CallBack callBack;
 
-    public RozaDisplayRecycleViewAdapter(Context context, List<Roza> rozaList) {
+    public RozaDisplayRecycleViewAdapter(Context context, List<Roza> rozaList, CallBack callBack) {
         this.context = context;
         this.rozaList = rozaList;
+        this.callBack = callBack;
     }
 
     @NonNull
@@ -49,9 +54,14 @@ public class RozaDisplayRecycleViewAdapter extends RecyclerView.Adapter<RozaDisp
         holder.txtDay.setText(String.valueOf(currentRoza.getDay()));
         holder.txtMonth.setText(String.valueOf(currentRoza.getMonth()));
 
+        colorSwitch(holder.mbRoza, currentRoza.isPassed());
+
         holder.mbRoza.setOnClickListener(v -> {
             currentRoza.setPassed(true);
             colorSwitch(holder.mbRoza, currentRoza.isPassed());
+
+            callBack.onClicRoza(rozaList);
+
         });
 
     }
@@ -76,11 +86,20 @@ public class RozaDisplayRecycleViewAdapter extends RecyclerView.Adapter<RozaDisp
         }
     }
 
+
     public void colorSwitch(MaterialButton mb, boolean isPassed) {
 
         if (isPassed) {
             mb.setBackgroundColor(ContextCompat.getColor(context, R.color.red));
             mb.setTextColor(ContextCompat.getColor(context, R.color.white));
+        } else {
+            mb.setBackgroundColor(ContextCompat.getColor(context, R.color.color_gray));
+            mb.setTextColor(ContextCompat.getColor(context, R.color.black));
         }
+    }
+
+    public interface CallBack {
+
+        void onClicRoza(List<Roza> rozaList);
     }
 }
